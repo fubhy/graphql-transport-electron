@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "commonjs",
+    "lib": ["es2015", "es2017.object", "es2017.string"],
+    "declaration": true,
+    "sourceMap": false,
+    "skipLibCheck": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "noImplicitAny": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowSyntheticDefaultImports": true,
+    "allowJs": false,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "removeComments": false,
+    "resolveJsonModule": true,
+    "rootDir": "src",
+    "outDir": "lib"
+  },
+  "include": ["src/**/*"]
+}
