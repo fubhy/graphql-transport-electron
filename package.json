@@ -1,0 +1,82 @@
+{
+  "name": "graphql-transport-electron",
+  "version": "0.0.1",
+  "description": "Enables inter process communication between a graphql client & server in electron.",
+  "main": "lib/server.js",
+  "browser": "lib/client.js",
+  "typings": "lib/types.d.ts",
+  "author": "Sebastian Siemssen <fubhy@fubhy.com>",
+  "license": "GPL-3.0",
+  "homepage": "https://github.com/fubhy/graphql-transport-electron#readme",
+  "contributors": [
+    "Sebastian Siemssen <fubhy@fubhy.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fubhy/graphql-transport-electron.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fubhy/graphql-transport-electron/issues"
+  },
+  "keywords": [
+    "electron",
+    "ipc",
+    "graphql",
+    "apollo",
+    "apollo-link"
+  ],
+  "files": [
+    "lib/"
+  ],
+  "scripts": {
+    "prepublish": "yarn lint && yarn test && yarn build",
+    "prebuild": "rimraf lib",
+    "build": "tsc -p tsconfig.build.json",
+    "clean": "rimraf lib && rimraf coverage",
+    "dev": "ts-node-dev src/dev orders",
+    "format": "prettier --write src/{*,**/*}.ts",
+    "lint:prettier": "yarn prettier --list-different src/{*,**/*}.ts",
+    "lint:tslint": "tsc --noEmit && tslint src/{*,**/*}.ts",
+    "lint": "yarn lint:tslint && yarn lint:prettier",
+    "snyk": "synk test",
+    "test": "yarn jest",
+    "test:coverage": "yarn test --coverage",
+    "test:watch": "yarn test --watch"
+  },
+  "dependencies": {
+    "apollo-link": "^1.2.6"
+  },
+  "devDependencies": {
+    "@types/graphql": "^14.0.5",
+    "@types/jest": "^23.3.9",
+    "@types/node": "^10.12.10",
+    "@types/ramda": "^0.25.44",
+    "graphql": "^14.1.1",
+    "husky": "^1.1.2",
+    "jest": "^23.6.0",
+    "lint-staged": "^7.3.0",
+    "prettier": "^1.14.3",
+    "rimraf": "^2.6.2",
+    "snyk": "^1.110.2",
+    "ts-jest": "^23.10.5",
+    "tslint": "^5.11.0",
+    "tslint-config-airbnb": "^5.11.0",
+    "tslint-config-prettier": "^1.15.0",
+    "typescript": "^3.1.1"
+  },
+  "peerDependencies": {
+    "graphql": "^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "yarn lint"
+    }
+  },
+  "lint-staged": {
+    "*.ts": [
+      "yarn format",
+      "git add"
+    ]
+  }
+}
