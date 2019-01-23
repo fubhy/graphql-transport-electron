@@ -1,9 +1,10 @@
 import { ApolloLink } from 'apollo-link';
 import { GraphQLSchema } from 'graphql';
+import { IpcRenderer, IpcMain } from 'electron';
 
 export interface ApolloIpcLinkOptions {
   channel?: string;
-  ipc: any;
+  ipc: IpcRenderer;
 }
 
 export interface SchemaLinkOptions {
@@ -14,7 +15,7 @@ export interface SchemaLinkOptions {
 
 export interface IpcExecutorOptions {
   link: ApolloLink;
-  ipc: any;
+  ipc: IpcMain;
   channel?: string;
 }
 

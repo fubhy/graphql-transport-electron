@@ -44,13 +44,15 @@
     "test:watch": "yarn test --watch"
   },
   "dependencies": {
-    "apollo-link": "^1.2.6"
+    "apollo-link": "^1.2.6",
+    "zen-observable-ts": "^0.8.13"
   },
   "devDependencies": {
     "@types/graphql": "^14.0.5",
     "@types/jest": "^23.3.9",
     "@types/node": "^10.12.10",
     "@types/ramda": "^0.25.44",
+    "electron": "^4.0.2",
     "graphql": "^14.1.1",
     "husky": "^1.1.2",
     "jest": "^23.6.0",

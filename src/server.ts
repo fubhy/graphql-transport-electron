@@ -86,4 +86,4 @@ export const createIpcExecutor = (options: IpcExecutorOptions) => {
   };
 };
 
-export { createIpcLink } from './client';
+export { IpcLink, createIpcLink } from './client';
