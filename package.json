@@ -1,6 +1,6 @@
 {
   "name": "graphql-transport-electron",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Enables inter process communication between a graphql client & server in electron.",
   "main": "lib/server.js",
   "browser": "lib/client.js",
