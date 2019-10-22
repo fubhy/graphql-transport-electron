@@ -6,7 +6,7 @@
   "browser": "lib/client.js",
   "typings": "lib/server.d.ts",
   "author": "Sebastian Siemssen <fubhy@fubhy.com>",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "homepage": "https://github.com/fubhy/graphql-transport-electron#readme",
   "contributors": [
     "Sebastian Siemssen <fubhy@fubhy.com>"
