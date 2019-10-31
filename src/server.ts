@@ -3,6 +3,7 @@ import { createAsyncIterator, forAwaitEach, isAsyncIterable } from 'iterall';
 import { getMainDefinition } from 'apollo-utilities';
 import { ApolloLink, FetchResult, Observable, execute as executeLink, Operation } from 'apollo-link';
 import { parse, execute, subscribe, ExecutionArgs } from 'graphql';
+import { serializeError } from 'serialize-error';
 
 const isSubscription = query => {
   const main = getMainDefinition(query);
@@ -58,7 +59,7 @@ export const createIpcExecutor = (options: IpcExecutorOptions) => {
 
     return result.subscribe(
       data => event.sender.send(channel, id, 'data', data),
-      error => event.sender.send(channel, id, 'error', error),
+      error => event.sender.send(channel, id, 'error', serializeError(error)),
       () => event.sender.send(channel, id, 'complete'),
     );
   };

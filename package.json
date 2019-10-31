@@ -46,6 +46,7 @@
   "dependencies": {
     "apollo-link": "^1.2.6",
     "iterall": "^1.2.2",
+    "serialize-error": "^5.0.0",
     "zen-observable-ts": "^0.8.13"
   },
   "devDependencies": {
