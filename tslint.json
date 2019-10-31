@@ -1,7 +1,7 @@
 {
   "extends": ["tslint-config-airbnb", "tslint-config-prettier"],
   "rules": {
-    "max-line-length": [true, { "limit": 80, "ignore-pattern": "^import" }],
+    "max-line-length": [true, { "limit": 120, "ignore-pattern": "^import" }],
     "interface-name": false,
     "no-implicit-dependencies": false,
     "object-literal-sort-keys": false,

@@ -1,23 +1,12 @@
-import {
-  SerializableGraphQLRequest,
-  SchemaLinkOptions,
-  IpcExecutorOptions,
-} from './types';
+import { SerializableGraphQLRequest, SchemaLinkOptions, IpcExecutorOptions } from './types';
 import { createAsyncIterator, forAwaitEach, isAsyncIterable } from 'iterall';
 import { getMainDefinition } from 'apollo-utilities';
-import {
-  ApolloLink,
-  FetchResult,
-  Observable,
-  execute as executeLink,
-} from 'apollo-link';
-import { parse, execute, subscribe } from 'graphql';
+import { ApolloLink, FetchResult, Observable, execute as executeLink, Operation } from 'apollo-link';
+import { parse, execute, subscribe, ExecutionArgs } from 'graphql';
 
 const isSubscription = query => {
   const main = getMainDefinition(query);
-  return (
-    main.kind === 'OperationDefinition' && main.operation === 'subscription'
-  );
+  return main.kind === 'OperationDefinition' && main.operation === 'subscription';
 };
 
 const ensureIterable = data => {
@@ -28,40 +17,35 @@ const ensureIterable = data => {
   return createAsyncIterator([data]);
 };
 
-type Executor = typeof execute | typeof subscribe;
+export const createSchemaLink = <TRoot = any>(options: SchemaLinkOptions) => {
+  const handleRequest = async (request: Operation, observer: any) => {
+    try {
+      const context = await options.context(request);
+      const args: ExecutionArgs = {
+        schema: options.schema,
+        rootValue: options.root,
+        contextValue: context,
+        variableValues: request.variables,
+        operationName: request.operationName,
+        document: request.query,
+      };
 
-export const createSchemaLink = (options: SchemaLinkOptions) => {
-  return new ApolloLink(request => {
+      const result = isSubscription(request.query) ? subscribe(args) : execute(args);
+      const iterable = ensureIterable(await result) as AsyncIterable<any>;
+      await forAwaitEach(iterable, (value: any) => observer.next(value));
+      observer.complete();
+    } catch (error) {
+      observer.error(error);
+    }
+  };
+
+  const createObservable = (request: Operation) => {
     return new Observable<FetchResult>(observer => {
-      const executor: Executor = isSubscription(request.query)
-        ? subscribe
-        : execute;
-
-      const context =
-        typeof options.context === 'function'
-          ? options.context(request)
-          : options.context;
-
-      const result = (executor as any)(
-        options.schema,
-        request.query,
-        options.root,
-        context,
-        request.variables,
-        request.operationName,
-      );
-
-      (async () => {
-        try {
-          const iterable = ensureIterable(await result);
-          await forAwaitEach(iterable, value => observer.next(value));
-          observer.complete();
-        } catch (error) {
-          observer.error(error);
-        }
-      })();
+      handleRequest(request, observer);
     });
-  });
+  };
+
+  return new ApolloLink(request => createObservable(request));
 };
 
 export const createIpcExecutor = (options: IpcExecutorOptions) => {
@@ -82,7 +66,7 @@ export const createIpcExecutor = (options: IpcExecutorOptions) => {
   options.ipc.on(channel, listener);
 
   return () => {
-    options.ipc.removeListener(channel, listener);
+    options.ipc.removeListener(channel, listener as any);
   };
 };
 

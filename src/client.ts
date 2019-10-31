@@ -8,10 +8,7 @@ export class IpcLink extends ApolloLink {
   private ipc: IpcRenderer;
   private counter: number = 0;
   private channel: string = 'graphql';
-  private observers: Map<
-    string,
-    ZenObservable.SubscriptionObserver<FetchResult>
-  > = new Map();
+  private observers: Map<string, ZenObservable.SubscriptionObserver<FetchResult>> = new Map();
 
   constructor(options: ApolloIpcLinkOptions) {
     super();
@@ -25,20 +22,18 @@ export class IpcLink extends ApolloLink {
   }
 
   public request(operation: Operation) {
-    return new Observable(
-      (observer: ZenObservable.SubscriptionObserver<FetchResult>) => {
-        const current = `${++this.counter}`;
-        const request: SerializableGraphQLRequest = {
-          operationName: operation.operationName,
-          variables: operation.variables,
-          query: print(operation.query),
-          context: operation.getContext(),
-        };
+    return new Observable((observer: ZenObservable.SubscriptionObserver<FetchResult>) => {
+      const current = `${++this.counter}`;
+      const request: SerializableGraphQLRequest = {
+        operationName: operation.operationName,
+        variables: operation.variables,
+        query: print(operation.query),
+        context: operation.getContext(),
+      };
 
-        this.observers.set(current, observer);
-        this.ipc.send(this.channel, current, request);
-      },
-    );
+      this.observers.set(current, observer);
+      this.ipc.send(this.channel, current, request);
+    });
   }
 
   protected listener = (event, id, type, data) => {
