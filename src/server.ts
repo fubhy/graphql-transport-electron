@@ -20,7 +20,7 @@ const ensureIterable = data => {
 export const createSchemaLink = <TRoot = any>(options: SchemaLinkOptions) => {
   const handleRequest = async (request: Operation, observer: any) => {
     try {
-      const context = await options.context(request);
+      const context = options.context && await options.context(request);
       const args: ExecutionArgs = {
         schema: options.schema,
         rootValue: options.root,
