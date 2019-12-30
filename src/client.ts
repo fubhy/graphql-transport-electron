@@ -3,6 +3,7 @@ import { IpcRenderer } from 'electron';
 import { print } from 'graphql';
 import { ApolloIpcLinkOptions, SerializableGraphQLRequest } from './types';
 import { ZenObservable } from 'zen-observable-ts';
+import { deserializeError } from 'serialize-error';
 
 export class IpcLink extends ApolloLink {
   private ipc: IpcRenderer;
@@ -48,7 +49,7 @@ export class IpcLink extends ApolloLink {
 
       case 'error': {
         this.observers.delete(id);
-        return observer && observer.error(data);
+        return observer && observer.error(deserializeError(data));
       }
 
       case 'complete': {
