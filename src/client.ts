@@ -29,7 +29,7 @@ export class IpcLink extends ApolloLink {
         operationName: operation.operationName,
         variables: operation.variables,
         query: print(operation.query),
-        context: operation.getContext(),
+        context: JSON.parse(JSON.stringify(operation.getContext()))
       };
 
       this.observers.set(current, observer);
