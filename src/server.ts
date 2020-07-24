@@ -57,10 +57,18 @@ export const createIpcExecutor = (options: IpcExecutorOptions) => {
       query: parse(request.query),
     });
 
+    const sendIpc = (type, data?) => {
+      try {
+        event.sender.send(channel, id, type, data);
+      } catch {
+        // WebContext has been destroyed, can't send
+      }
+    };
+
     return result.subscribe(
-      data => event.sender.send(channel, id, 'data', data),
-      error => event.sender.send(channel, id, 'error', serializeError(error)),
-      () => event.sender.send(channel, id, 'complete'),
+      data => sendIpc('data', data),
+      error => sendIpc('error', serializeError(error)),
+      () => sendIpc('complete'),
     );
   };
 
