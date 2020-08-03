@@ -58,10 +58,8 @@ export const createIpcExecutor = (options: IpcExecutorOptions) => {
     });
 
     const sendIpc = (type, data?) => {
-      try {
+      if (!event.sender.isDestroyed()) {
         event.sender.send(channel, id, type, data);
-      } catch {
-        // WebContext has been destroyed, can't send
       }
     };
 
