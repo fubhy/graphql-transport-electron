@@ -57,10 +57,16 @@ export const createIpcExecutor = (options: IpcExecutorOptions) => {
       query: parse(request.query),
     });
 
+    const sendIpc = (type, data?) => {
+      if (!event.sender.isDestroyed()) {
+        event.sender.send(channel, id, type, data);
+      }
+    };
+
     return result.subscribe(
-      data => event.sender.send(channel, id, 'data', data),
-      error => event.sender.send(channel, id, 'error', serializeError(error)),
-      () => event.sender.send(channel, id, 'complete'),
+      data => sendIpc('data', data),
+      error => sendIpc('error', serializeError(error)),
+      () => sendIpc('complete'),
     );
   };
 
