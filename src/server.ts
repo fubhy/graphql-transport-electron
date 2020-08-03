@@ -5,12 +5,12 @@ import { ApolloLink, FetchResult, Observable, execute as executeLink, Operation 
 import { parse, execute, subscribe, ExecutionArgs } from 'graphql';
 import { serializeError } from 'serialize-error';
 
-const isSubscription = query => {
+const isSubscription = (query) => {
   const main = getMainDefinition(query);
   return main.kind === 'OperationDefinition' && main.operation === 'subscription';
 };
 
-const ensureIterable = data => {
+const ensureIterable = (data) => {
   if (isAsyncIterable(data)) {
     return data;
   }
@@ -41,12 +41,12 @@ export const createSchemaLink = <TRoot = any>(options: SchemaLinkOptions) => {
   };
 
   const createObservable = (request: Operation) => {
-    return new Observable<FetchResult>(observer => {
+    return new Observable<FetchResult>((observer) => {
       handleRequest(request, observer);
     });
   };
 
-  return new ApolloLink(request => createObservable(request));
+  return new ApolloLink((request) => createObservable(request));
 };
 
 export const createIpcExecutor = (options: IpcExecutorOptions) => {
@@ -64,8 +64,8 @@ export const createIpcExecutor = (options: IpcExecutorOptions) => {
     };
 
     return result.subscribe(
-      data => sendIpc('data', data),
-      error => sendIpc('error', serializeError(error)),
+      (data) => sendIpc('data', data),
+      (error) => sendIpc('error', serializeError(error)),
       () => sendIpc('complete'),
     );
   };
