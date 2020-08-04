@@ -1,24 +1,24 @@
 import { SerializableGraphQLRequest, SchemaLinkOptions, IpcExecutorOptions } from './types';
 import { createAsyncIterator, forAwaitEach, isAsyncIterable } from 'iterall';
-import { getMainDefinition } from 'apollo-utilities';
-import { ApolloLink, FetchResult, Observable, execute as executeLink, Operation } from 'apollo-link';
-import { parse, execute, subscribe, ExecutionArgs } from 'graphql';
+import { ApolloLink, FetchResult, Observable, execute as executeLink, Operation } from '@apollo/client';
+import { getMainDefinition } from '@apollo/client/utilities';
+import { parse, execute, subscribe, ExecutionArgs, DocumentNode, ExecutionResult } from 'graphql';
 import { serializeError } from 'serialize-error';
 
-const isSubscription = (query) => {
+function isSubscription(query: DocumentNode) {
   const main = getMainDefinition(query);
   return main.kind === 'OperationDefinition' && main.operation === 'subscription';
-};
+}
 
-const ensureIterable = (data) => {
+function ensureIterable(data: ExecutionResult | AsyncIterableIterator<ExecutionResult>) {
   if (isAsyncIterable(data)) {
     return data;
   }
 
   return createAsyncIterator([data]);
-};
+}
 
-export const createSchemaLink = <TRoot = any>(options: SchemaLinkOptions) => {
+export function createSchemaLink(options: SchemaLinkOptions) {
   const handleRequest = async (request: Operation, observer: any) => {
     try {
       const context = options.context && (await options.context(request));
@@ -31,8 +31,8 @@ export const createSchemaLink = <TRoot = any>(options: SchemaLinkOptions) => {
         document: request.query,
       };
 
-      const result = isSubscription(request.query) ? subscribe(args) : execute(args);
-      const iterable = ensureIterable(await result) as AsyncIterable<any>;
+      const result = await (isSubscription(request.query) ? subscribe(args) : execute(args));
+      const iterable = (ensureIterable(result) as any) as AsyncIterable<any>;
       await forAwaitEach(iterable, (value: any) => observer.next(value));
       observer.complete();
     } catch (error) {
@@ -47,9 +47,9 @@ export const createSchemaLink = <TRoot = any>(options: SchemaLinkOptions) => {
   };
 
   return new ApolloLink((request) => createObservable(request));
-};
+}
 
-export const createIpcExecutor = (options: IpcExecutorOptions) => {
+export function createIpcExecutor(options: IpcExecutorOptions) {
   const channel = options.channel || 'graphql';
   const listener = (event, id, request: SerializableGraphQLRequest) => {
     const result: Observable<FetchResult> = executeLink(options.link, {
@@ -75,6 +75,6 @@ export const createIpcExecutor = (options: IpcExecutorOptions) => {
   return () => {
     options.ipc.removeListener(channel, listener as any);
   };
-};
+}
 
 export { IpcLink, createIpcLink } from './client';

@@ -1,16 +1,17 @@
-import { ApolloLink } from 'apollo-link';
+import { ApolloLink } from '@apollo/client';
 import { GraphQLSchema } from 'graphql';
 import { IpcRenderer, IpcMain } from 'electron';
 
-export interface ApolloIpcLinkOptions {
+export interface ApolloIpcLinkOptions<TContext = any> {
   channel?: string;
   ipc: IpcRenderer;
+  contextSerializer: (context: TContext) => any;
 }
 
-export interface SchemaLinkOptions {
+export interface SchemaLinkOptions<TContext = any, TRoot = any> {
   schema: GraphQLSchema;
-  root?: any;
-  context?: any;
+  root?: TRoot;
+  context?: TContext;
 }
 
 export interface IpcExecutorOptions {
@@ -19,10 +20,10 @@ export interface IpcExecutorOptions {
   channel?: string;
 }
 
-export interface SerializableGraphQLRequest {
+export interface SerializableGraphQLRequest<TContext = any, TVariables = any, TExtensions = any> {
   query: string;
-  variables?: Record<string, any>;
   operationName?: string;
-  context?: Record<string, any>;
-  extensions?: Record<string, any>;
+  variables?: TVariables;
+  context?: TContext;
+  extensions?: TExtensions;
 }
