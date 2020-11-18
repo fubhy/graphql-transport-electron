@@ -1,4 +1,4 @@
-import { ApolloLink, Observable, Operation, FetchResult } from 'apollo-link';
+import { ApolloLink, Observable, Operation, FetchResult } from '@apollo/client';
 import { IpcRenderer } from 'electron';
 import { print } from 'graphql';
 import { ApolloIpcLinkOptions, SerializableGraphQLRequest } from './types';
@@ -10,6 +10,7 @@ export class IpcLink extends ApolloLink {
   private counter: number = 0;
   private channel: string = 'graphql';
   private observers: Map<string, ZenObservable.SubscriptionObserver<FetchResult>> = new Map();
+  private contextSerializer?: (context: any) => any = undefined;
 
   constructor(options: ApolloIpcLinkOptions) {
     super();
@@ -17,6 +18,10 @@ export class IpcLink extends ApolloLink {
     this.ipc = options.ipc;
     if (typeof options.channel !== 'undefined') {
       this.channel = options.channel;
+    }
+
+    if (typeof options.contextSerializer !== 'undefined') {
+      this.contextSerializer = options.contextSerializer;
     }
 
     this.ipc.on(this.channel, this.listener);
@@ -29,7 +34,7 @@ export class IpcLink extends ApolloLink {
         operationName: operation.operationName,
         variables: operation.variables,
         query: print(operation.query),
-        context: JSON.parse(JSON.stringify(operation.getContext())),
+        context: this.contextSerializer?.(operation.getContext()),
       };
 
       this.observers.set(current, observer);
@@ -37,7 +42,7 @@ export class IpcLink extends ApolloLink {
     });
   }
 
-  protected listener = (event, id, type, data) => {
+  protected listener = (_, id, type, data) => {
     if (!this.observers.has(id)) {
       console.error(`Missing observer for query id ${id}.`);
     }
