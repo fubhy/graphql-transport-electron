@@ -5,7 +5,7 @@ import { IpcRenderer, IpcMain } from 'electron';
 export interface ApolloIpcLinkOptions<TContext = any> {
   channel?: string;
   ipc: IpcRenderer;
-  contextSerializer: (context: TContext) => any;
+  contextSerializer?: (context: TContext) => any;
 }
 
 export interface SchemaLinkOptions<TContext = any, TRoot = any> {
