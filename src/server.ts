@@ -1,6 +1,6 @@
 import { SerializableGraphQLRequest, SchemaLinkOptions, IpcExecutorOptions } from './types';
 import { createAsyncIterator, forAwaitEach, isAsyncIterable } from 'iterall';
-import { ApolloLink, FetchResult, Observable, execute as executeLink, Operation } from '@apollo/client';
+import { ApolloLink, FetchResult, Observable, execute as executeLink, Operation } from '@apollo/client/core';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { parse, execute, subscribe, ExecutionArgs, DocumentNode, ExecutionResult } from 'graphql';
 import { serializeError } from 'serialize-error';
