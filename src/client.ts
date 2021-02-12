@@ -1,4 +1,4 @@
-import { ApolloLink, Observable, Operation, FetchResult } from '@apollo/client';
+import { ApolloLink, Observable, Operation, FetchResult } from '@apollo/client/core';
 import { IpcRenderer } from 'electron';
 import { print } from 'graphql';
 import { ApolloIpcLinkOptions, SerializableGraphQLRequest } from './types';
